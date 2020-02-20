@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {Card, Button,Form } from 'react-bootstrap';
 
-export default class Itemslist extends Component {
+export default class Orderlist extends Component {
 
     constructor(props) {
         super(props);
@@ -24,22 +24,36 @@ export default class Itemslist extends Component {
         this.x=[];
         // console.log(this.state.email)
         for (const item of this.state.ori){
-            if((typeof item.name)=="string"&&item.name.indexOf(this.tmp)!=-1)
+            if(item.name.indexOf(this.tmp)!=-1)
                 this.x.push(item);
         }
         this.setState({users: this.x});
         this.setState({ email: event.target.value });
         // console.log(this.x);
+
     }
+    fuzzySearch()
+    {
+        this.tmp = this.filterValuePart(this.state.users,this.state.email);
+        console.log(this.tmp);
+    }
+
 
     componentDidMount() {
         const Token = {
             token: sessionStorage.getItem("zzz")
         }
-        axios.post('http://localhost:4000/item/',Token)
+        axios.post('http://localhost:4000/order/',Token)
             .then(response => {
                 console.log("kk"+ response.data);
-                this.setState({users: response.data,ori:response.data});
+                // this.setState({users: response.data,ori:response.data});
+                this.x=[];
+                console.log(response.data);
+                for (const item of response.data){
+                    if((typeof item.customer)=="string"&&item.customer==sessionStorage.getItem("name"))
+                        this.x.push(item);
+                }
+                this.setState({users: this.x,ori:this.x});
             })
             .catch(function(error) {
                 console.log(error);
@@ -52,7 +66,7 @@ export default class Itemslist extends Component {
     render() {
         return(
             <div>
-            <h1>ORDER ITEMS</h1>
+            <h1>ORDERED ITEMS</h1>
             <div className="form-group">
             <label>search: </label>
             <input type="text" 
@@ -65,10 +79,8 @@ export default class Itemslist extends Component {
             <thead>
             <tr>
             <th>Name</th>
-            <th>Price</th>
-            <th>Quantity Available</th>
-            <th>Order Quantity</th>
-            <th>Order</th>
+            <th>Status</th>
+            <th>Quantity</th>
             </tr>
             </thead>
             <tbody>
@@ -77,21 +89,8 @@ export default class Itemslist extends Component {
                     return (
                         <tr>
                         <td>{currentUser.name}</td>
-                        <td>{currentUser.price}</td>
+                        <td>{currentUser.st}</td>
                         <td>{currentUser.quantity}</td>
-                        <td> 
-                        <div className="form-group">
-                        <input id="qty" type="text" 
-                        className="form-control" 
-                        // value={this.state.qty}
-                        />  
-                        </div>
-                        </td>
-                        <td>
-                        <div className="form-group">
-                        <input type="submit" value="Order" onClick={this.fun} className="btn btn-primary"/>
-                        </div>
-                        </td>
                         </tr>
                     )
                 })

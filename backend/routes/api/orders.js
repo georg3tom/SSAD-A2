@@ -15,7 +15,7 @@ function getn(token)
 }
 
 orderRoutes.route('/').post(function(req, res) {
-    Item.find(function(err, items) {
+    Order.find(function(err, items) {
         if (err) {
             console.log(err);
         } else {
@@ -27,17 +27,18 @@ orderRoutes.route('/').post(function(req, res) {
 // Adding a new item
 orderRoutes.route('/add').post(function(req, res) {
     let order = new Order;
-    order.customer = req.body.customer;
+    order.vendor = req.body.vendor;
     order.itemid = req.body.itemid;
+    order.name = req.body.name;
     order.quantity = req.body.quantity;
-    order.st = req.body.quantity;
+    order.st = "Waiting";
     User.findById(getn(req.body.token),function(err,user) {
-        item.username=user.username;
-        console.log(item)
+        order.customer=user.username;
+        // console.log(item)
         if(user.type=="Customer")
             order.save()
                 .then(item => {
-                    res.status(200).json({'item': 'Item added successfully'});
+                    res.status(200).json({'order': 'order placed successfully'});
                 })
                 .catch(err => {
                     res.status(400).send('Error');

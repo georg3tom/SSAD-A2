@@ -10,6 +10,8 @@ import Login from './login'
 import Additem from './create-item.component'
 import Listitemv from './items-list-component-vendor'
 import Listitemv1 from './items-list-component-customer'
+import Orderlist from './order-list-component-customer'
+import Orderlist1 from './order-list-component-vendor'
 
 class AppNavbar extends Component {
     constructor(props){
@@ -18,9 +20,10 @@ class AppNavbar extends Component {
         this.pp="Login"
         this.username=sessionStorage.getItem("name");
         this.handleLoginClick = this.handleLoginClick.bind(this);
-        if(this.username!=="null")
+        console.log(this.username)
+        if(this.username!=="null" &this.username!==null)
         {
-            console.log(this.username!="null");
+            console.log(this.username!=="null");
             this.pp = this.username + ": " + "Logout";
         }
         else
@@ -56,17 +59,27 @@ class AppNavbar extends Component {
             }
             {sessionStorage.getItem("type")=="Customer" && 
             <li className="navbar-item">
-            <Link to="/listitem" className="nav-link"> Item list</Link>
+            <Link to="/listitem" className="nav-link"> Products list</Link>
+            </li>
+            }
+            {sessionStorage.getItem("type")=="Customer" && 
+            <li className="navbar-item">
+            <Link to="/orderlist" className="nav-link"> Order list</Link>
             </li>
             }
             {sessionStorage.getItem("type")=="Vendor" && 
             <li className="navbar-item">
-            <Link to="/listitemv" className="nav-link">Listitem</Link>
+            <Link to="/listitemv" className="nav-link">List Products</Link>
             </li>
             }
             {sessionStorage.getItem("type")=="Vendor" && 
             <li className="navbar-item">
             <Link to="/additem" className="nav-link">Add item</Link>
+            </li>
+            }
+            {sessionStorage.getItem("type")=="Vendor" && 
+            <li className="navbar-item">
+            <Link to="/orderlistv" className="nav-link">Dispatch Products</Link>
             </li>
             }
             </ul>
@@ -91,6 +104,8 @@ class AppNavbar extends Component {
             <Route path="/additem" component={Additem}/>
             <Route path="/listitemv" component={Listitemv}/>
             <Route path="/listitem" component={Listitemv1}/>
+            <Route path="/orderlist" component={Orderlist}/>
+            <Route path="/orderlistv" component={Orderlist1}/>
             </div>
             </Router>
         );
