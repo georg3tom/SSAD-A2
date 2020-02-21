@@ -50,7 +50,7 @@ export default class Orderlist1 extends Component {
                 this.x=[];
                 console.log(response.data);
                 for (const item of response.data){
-                    if((typeof item.customer)=="string"&&item.customer==sessionStorage.getItem("name"))
+                    if((typeof item.customer)=="string"&&item.customer==sessionStorage.getItem("name")&&item.quantity>0)
                         this.x.push(item);
                 }
                 this.setState({users: this.x,ori:this.x});

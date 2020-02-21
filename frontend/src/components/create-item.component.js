@@ -43,8 +43,11 @@ export default class Additem extends Component {
             quantity: this.state.quantity,
             token: sessionStorage.getItem("zzz"),
         }
-        console.log(newItem);
-
+        if(this.state.quantity===null||this.state.name===null||this.state.quantity<1 || this.state.name ==="" || this.state.price ===null || this.state.price==="")
+        {
+            console.log("rr");
+            return;
+        }
         axios.post('http://localhost:4000/item/add', newItem)
              .then(res => console.log(res.data));
 
@@ -74,7 +77,7 @@ export default class Additem extends Component {
                         <label>Price: </label>
                         <input type="text" 
                                className="form-control" 
-                               value={this.state.Price}
+                               value={this.state.price}
                                onChange={this.onChangePrice}
                                />  
                     </div>
@@ -82,7 +85,7 @@ export default class Additem extends Component {
                         <label>Quantity: </label>
                         <input type="text" 
                                className="form-control" 
-                               value={this.state.Quantity}
+                               value={this.state.quantity}
                                onChange={this.onChangeQuantity}
                                />  
                     </div>

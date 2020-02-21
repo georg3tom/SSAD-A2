@@ -5,9 +5,15 @@ export default class Itemslist extends Component {
     
     constructor(props) {
         super(props);
-        this.state = {users: []}
+        this.state = {users: [],
+        id:0}
+        this.fun = this.fun.bind(this);
+        this.onChangeId = this.onChangeId.bind(this);
     }
 
+    onChangeId(event) {
+        this.setState({ id: event.target.value });
+    }
     componentDidMount() {
         const Token = {
             token: sessionStorage.getItem("zzz")
@@ -15,13 +21,48 @@ export default class Itemslist extends Component {
         axios.post('http://localhost:4000/item/',Token)
              .then(response => {
                  console.log("kk"+ response.data);
-                 this.setState({users: response.data});
+                this.x=[];
+                for (const item of response.data){
+                    if(item.quantity>0)
+                        this.x.push(item);
+                }
+                 this.setState({users: this.x});
              })
              .catch(function(error) {
                  console.log(error);
              })
     }
 
+    fun()
+    {
+        console.log(this.state.users.length)
+        if(this.state.id > this.state.users.length-1)
+            return;
+        this.selected = this.state.users[this.state.id];
+        const newOrder = {
+            id: this.selected._id
+        }
+        axios.post('http://localhost:4000/item/delete', newOrder)
+             .then(res => console.log(res.data));
+        const Token = {
+            token: sessionStorage.getItem("zzz")
+        }
+        axios.post('http://localhost:4000/item/',Token)
+             .then(response => {
+                 console.log("kk"+ response.data);
+                this.x=[];
+                for (const item of response.data){
+                    if(item.quantity>0)
+                        this.x.push(item);
+                }
+                 this.setState({users: this.x});
+             })
+             .catch(function(error) {
+                 console.log(error);
+             })
+        console.log("ues");
+    }
+    
     render() {
         return (
             <div>
@@ -29,10 +70,10 @@ export default class Itemslist extends Component {
                 <table className="table table-striped">
                     <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Name</th>
                             <th>Price</th>
                             <th>Quantity</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,18 +81,29 @@ export default class Itemslist extends Component {
                         this.state.users.map((currentUser, i) => {
                             return (
                                 <tr>
+                                    <td>{i}</td>
                                     <td>{currentUser.name}</td>
                                     <td>{currentUser.price}</td>
                                     <td>{currentUser.quantity}</td>
-                                    <td>
-                        <input type="submit" value="Cancel" className="btn btn-primary"/>
-                                </td>
                                 </tr>
                             )
                         })
                     }
                     </tbody>
                 </table>
+                    <div className="form-group">
+                        <label>Id: </label>
+                        <input type="text" 
+                               className="form-control" 
+                               value={this.state.id}
+                               onChange={this.onChangeId}
+                               />
+                    </div>
+
+                   
+                    <div className="form-group">
+                        <input type="submit" onClick={this.fun} value="Cancel" className="btn btn-primary"/>
+                    </div>
             </div>
         )
     }

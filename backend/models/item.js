@@ -13,6 +13,15 @@ let Item = new mongoose.Schema({
         type: Number,
         require: true
     },
+    st: {
+        type: String
+    },
+    review: {
+        type: String
+    },
+    rating: {
+        type: String
+    },
     username: {
         type: String,
         require: true

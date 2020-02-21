@@ -14,6 +14,9 @@ let User = new mongoose.Schema({
         type: String,
         require: true
     },
+    rating: {
+        type: Number,
+    },
     password: {
         type: String,
         require: true

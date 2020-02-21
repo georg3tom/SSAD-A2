@@ -32,6 +32,26 @@ orderRoutes.route('/add').post(function(req, res) {
     order.name = req.body.name;
     order.quantity = req.body.quantity;
     order.st = "Waiting";
+    if(order.quantity === 0)
+        return res.status(400).send('Error');
+    Item.findById(order.itemid, function(err, item) {
+        let newq = item.quantity - order.quantity;
+        let newst = "Waiting";
+        console.log(newq);
+        if(newq <1)
+        {
+            newq = 0;
+            newst = "Pending";
+            order.st = newst;
+            Order.updateMany({"itemid": order.itemid}, {"$set":{"st": newst}}, {"multi": true},(err, writeResult) => {});
+        }
+        Item.findOneAndUpdate({"_id": order.itemid}, {quantity: newq}, {upsert: true}, function (error, updatedItem) {
+            if (error) {
+                console.log('Error')
+            }
+            console.log(updatedItem)
+        })
+    });
     User.findById(getn(req.body.token),function(err,user) {
         order.customer=user.username;
         // console.log(item)
@@ -61,6 +81,11 @@ orderRoutes.route('/delete/:id').post(function(req, res) {
     Order.findById(req.params.id)
         .then(item=> item.remove().then(() => res.json({ success: true })))
         .catch(err => res.status(404).json({ success: false }));
+});
+orderRoutes.route('/dispatch').post(function(req, res) {
+
+    Order.updateMany({"itemid": req.body.id}, {"$set":{"st": "Dispatched"}}, {"multi": true},(err, writeResult) => {});
+    Item.updateMany({"_id": req.body.id}, {"$set":{"st": "Dispatched"}}, {"multi": true},(err, writeResult) => {});
 });
 
 module.exports = orderRoutes;

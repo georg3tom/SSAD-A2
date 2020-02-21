@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 //Item model
 const Item = require('../../models/item');
+const Order = require('../../models/order');
 let User = require('../../models/user');
 
 function getn(token) 
@@ -41,6 +42,7 @@ itemRoutes.route('/add').post(function(req, res) {
     item.price = req.body.price;
     item.quantity = req.body.quantity;
     item.name = req.body.name;
+    item.review="";
     console.log(item)
     User.findById(getn(req.body.token),function(err,user) {
         item.username=user.username;
@@ -67,10 +69,39 @@ itemRoutes.route('/:id').get(function(req, res) {
     });
 });
 
-itemRoutes.route('/delete/:id').post(function(req, res) {
-    Item.findById(req.params.id)
+itemRoutes.route('/delete').post(function(req, res) {
+
+    Order.updateMany({"itemid": req.body.id}, {"$set":{"st": "Canceled"}}, {"multi": true},(err, writeResult) => {});
+    Item.findById(req.body.id)
     .then(item=> item.remove().then(() => res.json({ success: true })))
     .catch(err => res.status(404).json({ success: false }));
 });
+
+itemRoutes.route('/rating').post(function(req, res) {
+    let x="";
+    console.log(req.body.rating);
+    Item.findOne({"_id":req.body.itemid},function(err,item) {
+        if(true)
+        {
+
+            if(req.body.review===null||req.body.review==="")
+                return res.status(400).send('Error');
+            if(item.review==null)
+                x=req.body.review;
+            else
+                x=item.review +", "+req.body.review;
+            console.log(x);
+            Item.update({_id: req.body.itemid}, {"$set":{"review":x}},(err, writeResult) => {console.log(writeResult)});
+            res.status(200).send('OK');
+            
+
+        }
+        else
+            res.status(400).send('Error');
+    }
+    );
+
+});
+
 
 module.exports = itemRoutes;

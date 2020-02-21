@@ -9,7 +9,8 @@ export default class Orderlist extends Component {
         this.state = {users: [],
             ori:[],
             qty:0,
-            email:''
+            email:'',
+            item:[]
         }
         this.onChangeQty = this.onChangeQty.bind(this);
         this.onChangeEmail = this.onChangeEmail.bind(this);
@@ -46,14 +47,30 @@ export default class Orderlist extends Component {
         axios.post('http://localhost:4000/order/',Token)
             .then(response => {
                 console.log("kk"+ response.data);
-                // this.setState({users: response.data,ori:response.data});
                 this.x=[];
-                console.log(response.data);
                 for (const item of response.data){
                     if((typeof item.customer)=="string"&&item.customer==sessionStorage.getItem("name"))
                         this.x.push(item);
                 }
+                axios.post('http://localhost:4000/item/',Token)
+                    .then(response => {
+                        this.item=response.data;
+                        for(var i=0;i<this.x.length;i++)
+                        {
+                            for(var k=0;k<this.item.length;k=k+1)
+                            {
+                                if(this.x[i].itemid===this.item[k]._id)
+                                {
+                                    this.x[i].qtyleft=this.item[k].quantity;
+                                }
+                            }
+                        }
                 this.setState({users: this.x,ori:this.x});
+
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    })
             })
             .catch(function(error) {
                 console.log(error);
@@ -80,7 +97,8 @@ export default class Orderlist extends Component {
             <tr>
             <th>Name</th>
             <th>Status</th>
-            <th>Quantity</th>
+            <th>Quantity Ordered</th>
+            <th>Quantity Left</th>
             </tr>
             </thead>
             <tbody>
@@ -91,6 +109,7 @@ export default class Orderlist extends Component {
                         <td>{currentUser.name}</td>
                         <td>{currentUser.st}</td>
                         <td>{currentUser.quantity}</td>
+                        <td>{currentUser.qtyleft}</td>
                         </tr>
                     )
                 })

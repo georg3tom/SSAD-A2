@@ -9,14 +9,19 @@ export default class Itemslist extends Component {
         this.state = {users: [],
             ori:[],
             qty:0,
-            email:''
+            email:'',
+            id:0
         }
         this.onChangeQty = this.onChangeQty.bind(this);
         this.onChangeEmail = this.onChangeEmail.bind(this);
         this.fun = this.fun.bind(this);
+        this.onChangeId = this.onChangeId.bind(this);
     }
     onChangeQty(event) {
         this.setState({ qty: event.target.value });
+    }
+    onChangeId(event) {
+        this.setState({ id: event.target.value });
     }
 
     onChangeEmail(event) {
@@ -39,14 +44,38 @@ export default class Itemslist extends Component {
         axios.post('http://localhost:4000/item/',Token)
             .then(response => {
                 console.log("kk"+ response.data);
-                this.setState({users: response.data,ori:response.data});
+                this.x=[];
+                for (const item of response.data){
+                    if(item.quantity>0)
+                        this.x.push(item);
+                }
+                 this.setState({users: this.x});
             })
             .catch(function(error) {
                 console.log(error);
             })
     }
     fun(){
-        console.log(this.state)
+        if(this.state.qty<1)
+        {
+            return;
+        }
+
+        if(this.state.id > this.state.users.length-1 )
+            return;
+        this.selected = this.state.users[this.state.id];
+        const newOrder = {
+            vendor: this.selected.username,
+            itemid: this.selected._id,
+            token: sessionStorage.getItem("zzz"),
+            quantity: this.state.qty,
+            name: this.selected.name,
+        }
+
+        axios.post('http://localhost:4000/order/add', newOrder)
+             .then(res => console.log(res.data));
+        this.componentDidMount();
+
     }
 
     render() {
@@ -64,11 +93,10 @@ export default class Itemslist extends Component {
             <table className="table table-striped">
             <thead>
             <tr>
+            <th>id</th>
             <th>Name</th>
             <th>Price</th>
             <th>Quantity Available</th>
-            <th>Order Quantity</th>
-            <th>Order</th>
             </tr>
             </thead>
             <tbody>
@@ -76,28 +104,37 @@ export default class Itemslist extends Component {
                 this.state.users.map((currentUser, i) => {
                     return (
                         <tr>
+                        <td>{i}</td>
                         <td>{currentUser.name}</td>
                         <td>{currentUser.price}</td>
                         <td>{currentUser.quantity}</td>
-                        <td> 
-                        <div className="form-group">
-                        <input id="qty" type="text" 
-                        className="form-control" 
-                        // value={this.state.qty}
-                        />  
-                        </div>
-                        </td>
-                        <td>
-                        <div className="form-group">
-                        <input type="submit" value="Order" onClick={this.fun} className="btn btn-primary"/>
-                        </div>
-                        </td>
                         </tr>
                     )
                 })
             }
             </tbody>
             </table>
+                    <div className="form-group">
+                        <label>Id: </label>
+                        <input type="text" 
+                               className="form-control" 
+                               value={this.state.id}
+                               onChange={this.onChangeId}
+                               />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Quantity: </label>
+                        <input type="text" 
+                               className="form-control" 
+                               value={this.state.qty}
+                               onChange={this.onChangeQty}
+                               />  
+                    </div>
+
+                    <div className="form-group">
+                        <input type="submit" onClick={this.fun} value="Place Order" className="btn btn-primary"/>
+                    </div>
             </div>
         )
     }

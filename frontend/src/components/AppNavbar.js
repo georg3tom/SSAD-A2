@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import { BrowserRouter as Router, Route,Redirect, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css"
 import axios from 'axios';
+import {Navbar,Nav,NavDropdown} from 'react-bootstrap'
 
 import UsersList from './users-list.component'
 import CreateUser from './create-user.component'
@@ -12,12 +13,20 @@ import Listitemv from './items-list-component-vendor'
 import Listitemv1 from './items-list-component-customer'
 import Orderlist from './order-list-component-customer'
 import Orderlist1 from './order-list-component-vendor'
+import Dispatch from './dispatch-list-component-vendor'
+import Dispatched from './dispatched-list-component-vendor'
+import VendorR from './vendor-review.component'
+import ReviewC from './review-list-component-customer'
+import Itemrating from './item-rating-component-vendor'
 
 class AppNavbar extends Component {
     constructor(props){
         super(props);
         this.isin=sessionStorage.getItem("zzz");
         this.pp="Login"
+        this.home='/listitem';
+        if(sessionStorage.getItem("type")==="Vendor")
+            this.home="/listitemv";
         this.username=sessionStorage.getItem("name");
         this.handleLoginClick = this.handleLoginClick.bind(this);
         console.log(this.username)
@@ -45,56 +54,50 @@ class AppNavbar extends Component {
     render() {
         return (
             <Router>
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <Link to="/" className="navbar-brand">Piggy</Link>
-            <div className="collapse navbar-collapse">
-            <ul className="navbar-nav mr-auto">
-            <li className="navbar-item">
-            <Link to="/" className="nav-link">Users</Link>
-            </li>
+            <div>
+            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+            <Navbar.Brand href={this.home}>Piggy</Navbar.Brand>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="mr-auto">
             {sessionStorage.getItem("zzz")=="null" && 
-            <li className="navbar-item">
-            <Link to="/create" className="nav-link">Register User</Link>
-            </li>
+                <Nav.Link href="/create">Register</Nav.Link>
             }
             {sessionStorage.getItem("type")=="Customer" && 
-            <li className="navbar-item">
-            <Link to="/listitem" className="nav-link"> Products list</Link>
-            </li>
+                    <Nav.Link href="/listitem">Products List</Nav.Link>
             }
             {sessionStorage.getItem("type")=="Customer" && 
-            <li className="navbar-item">
-            <Link to="/orderlist" className="nav-link"> Order list</Link>
-            </li>
+                    <Nav.Link href="/orderlist">Order List</Nav.Link>
+            }
+            {sessionStorage.getItem("type")=="Customer" && 
+                    <Nav.Link href="/vendorrating">Vendor Rating</Nav.Link>
+            }
+            {sessionStorage.getItem("type")=="Customer" && 
+                    <Nav.Link href="/review">Review Products</Nav.Link>
             }
             {sessionStorage.getItem("type")=="Vendor" && 
-            <li className="navbar-item">
-            <Link to="/listitemv" className="nav-link">List Products</Link>
-            </li>
+                    <Nav.Link href="/listitemv">List Products</Nav.Link>
             }
             {sessionStorage.getItem("type")=="Vendor" && 
-            <li className="navbar-item">
-            <Link to="/additem" className="nav-link">Add item</Link>
-            </li>
+                    <Nav.Link href="/additem">Add Products</Nav.Link>
             }
             {sessionStorage.getItem("type")=="Vendor" && 
-            <li className="navbar-item">
-            <Link to="/orderlistv" className="nav-link">Dispatch Products</Link>
-            </li>
+                    <Nav.Link href="/dispatch">Dispatch Products</Nav.Link>
             }
-            </ul>
-            <ul className="navbar-nav mr-auto">
-            </ul>
-            <ul className="navbar-nav mr-auto">
-            </ul>
-            <ul className="navbar-nav mr-auto">
-            <li className="navbar-item nav-link">
-            <Link to="#" className="nav-link" onClick={this.handleLoginClick}> {this.pp}
-            </Link>
-            </li>
-            </ul>
+            {sessionStorage.getItem("type")=="Vendor" && 
+                    <Nav.Link href="/dispatched">Dispatched Products</Nav.Link>
+            }
+            {sessionStorage.getItem("type")=="Customer" && 
+                    <Nav.Link href="/dispatched">Products Reviews</Nav.Link>
+            }
+
+            </Nav>
+            <Nav>
+            <Nav.Link href="#deets" onClick={this.handleLoginClick}>{this.pp}</Nav.Link>
+            </Nav>
+            </Navbar.Collapse>
+            </Navbar>
             </div>
-            </nav>
             <div className="container">
             <br/>
             <Route path="/" exact component={UsersList}/>
@@ -106,6 +109,11 @@ class AppNavbar extends Component {
             <Route path="/listitem" component={Listitemv1}/>
             <Route path="/orderlist" component={Orderlist}/>
             <Route path="/orderlistv" component={Orderlist1}/>
+            <Route path="/dispatch" component={Dispatch}/>
+            <Route path="/dispatched" component={Dispatched}/>
+            <Route path="/vendorrating" component={VendorR}/>
+            <Route path="/review" component={ReviewC}/>
+            <Route path="/itemrating" component={Itemrating}/>
             </div>
             </Router>
         );

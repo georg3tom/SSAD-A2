@@ -21,6 +21,7 @@ userRoutes.route('/').get(function(req, res) {
 userRoutes.route('/add').post(function(req, res) {
     let user = new User(req.body);
     const {username,email,password,type} = req.body;
+    const rating=5;
     if(!username || !email || !password || !type) {
         return res.status(400).json({res:'Missing fieds'});
     }
@@ -31,6 +32,7 @@ userRoutes.route('/add').post(function(req, res) {
                 username,
                 email,
                 type,
+                rating,
                 password
             });
             bcrypt.genSalt(10, (err, salt) => {
@@ -109,6 +111,32 @@ userRoutes.route('/delete/:id').post(function(req, res) {
     User.findById(req.params.id)
         .then(user=> user.remove().then(() => res.json({ success: true })))
         .catch(err => res.status(404).json({ success: false }));
+});
+
+userRoutes.route('/rating').post(function(req, res) {
+    let x=0;
+    console.log(req.body.rating);
+    User.findOne({"username":req.body.username},function(err,user) {
+        if(true)
+        {
+            console.log('u'+user.rating);
+            if(user.rating)
+            {
+                    x=parseInt(user.rating);
+            }
+            console.log('r'+req.body.rating);
+            x=(x+parseInt(req.body.rating))/2;
+            console.log(x);
+            User.update({username: req.body.username}, {"$set":{"rating":x}},(err, writeResult) => {console.log(writeResult)});
+            res.status(200).send('OK');
+            
+
+        }
+        else
+            res.status(400).send('Error');
+    }
+    );
+
 });
 
 module.exports = userRoutes;
