@@ -24,7 +24,7 @@ export default class Itemslist extends Component {
                 console.log(response.data);
                 for (const item of response.data){
                     console.log(item.quantity);
-                    if((typeof item.username)=="string"&&item.username==sessionStorage.getItem("name")&&item.quantity==0&&item.st!=="Dispatched")
+                    if((typeof item.username)=="string" && item.username==sessionStorage.getItem("name") && item.quantity==0 && item.st!=="Dispatched")
                         this.x.push(item);
                 }
                 this.setState({users: this.x});
