@@ -43,7 +43,7 @@ export default class Additem extends Component {
             quantity: this.state.quantity,
             token: sessionStorage.getItem("zzz"),
         }
-        if(this.state.quantity===null||this.state.name===null||this.state.quantity<1 || this.state.name ==="" || this.state.price ===null || this.state.price==="")
+        if(this.state.quantity===null||this.state.name===null||this.state.quantity<1 || this.state.price ===null || this.state.name ==="" || this.state.price==="")
         {
             console.log("rr");
             return;
