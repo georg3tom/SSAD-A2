@@ -23,7 +23,7 @@ export default class Itemrating extends Component {
                  console.log("kk"+ response.data);
                 this.x=[];
                 for (const item of response.data){
-                    if(item.st==="Dispatched")
+                    if (item.st === "Dispatched")
                         this.x.push(item);
                 }
                  this.setState({users: this.x});
